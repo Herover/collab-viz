@@ -1,18 +1,29 @@
 <script setup lang="ts">
 import ReconnectingWebSocket from "reconnecting-websocket";
 import Client from "sharedb/lib/client";
-import { onMounted, onUnmounted, ref, watch } from "vue";
+import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import * as json1 from "ot-json1";
 import { View, parse, type Spec } from "vega";
 import type { Socket } from "sharedb/lib/sharedb";
 import ScalesEditor from "./ScalesEditor.vue";
 // import MarkSelector from "../components/MarkSelector.vue";
 
+const STATUS_OK = 0;
+const STATUS_WARN = 1;
+const STATUS_ERROR = 2;
+
 const viz = ref(null as unknown as HTMLElement);
 
 const vegaSpec = ref<Spec>({});
 const canRenderSpec = ref(true);
+const connected = ref(false);
 const scales = ref([]);
+
+const statusIndicator = computed(() => {
+  if (!canRenderSpec.value) return STATUS_ERROR;
+  if (!connected.value) return STATUS_WARN;
+  return STATUS_OK;
+});
 
 let view: View;
 watch(vegaSpec, () => {
@@ -45,6 +56,18 @@ const updateSpec = () => {
 const socket = new ReconnectingWebSocket(
   "ws://" + window.location.hostname + ":8080"
 );
+socket.addEventListener("open", () => {
+  connected.value = true;
+});
+socket.addEventListener("close", (e) => {
+  connected.value = false;
+  console.log("close", e);
+});
+socket.addEventListener("error", (e) => {
+  connected.value = false;
+  console.log("error", e, socket.CONNECTING, socket.CLOSED);
+});
+
 Client.types.register(json1.type);
 const connection = new Client.Connection(socket as Socket);
 
@@ -89,9 +112,11 @@ const changed = (op: any) => {
       <span
         :class="{
           circle: true,
-          ['viz-status-' + (canRenderSpec ? 'ok' : 'error')]: true,
+          ['viz-status-' + ['ok', 'warn', 'error'][statusIndicator]]: true,
         }"
       ></span>
+      <span v-if="!canRenderSpec">&nbsp;specification is invalid&nbsp;</span>
+      <span v-if="!connected">&nbsp;reconnecting</span>
     </p>
     <!-- <MarkSelector :initialMark="initialMark" @op="submitOp" /> -->
     <br />
@@ -116,6 +141,9 @@ const changed = (op: any) => {
 }
 .viz-status-ok {
   background-color: green;
+}
+.viz-status-warn {
+  background-color: orange;
 }
 .viz-status-error {
   background-color: red;
