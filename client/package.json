@@ -13,7 +13,12 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
   },
   "dependencies": {
+    "events": "^3.3.0",
+    "ot-json1": "^1.0.2",
     "pinia": "^2.0.16",
+    "reconnecting-websocket": "^4.4.0",
+    "sharedb": "^3.0.0",
+    "vega": "^5.22.1",
     "vue": "^3.2.37",
     "vue-router": "^4.1.2"
   },
@@ -21,6 +26,7 @@
     "@rushstack/eslint-patch": "^1.1.0",
     "@types/jsdom": "^16.2.14",
     "@types/node": "^16.11.45",
+    "@types/sharedb": "^3.0.0",
     "@vitejs/plugin-vue": "^3.0.1",
     "@vue/eslint-config-prettier": "^7.0.0",
     "@vue/eslint-config-typescript": "^11.0.0",

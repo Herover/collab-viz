@@ -1,5 +1,123 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import ReconnectingWebSocket from "reconnecting-websocket";
+import Client from "sharedb/lib/client";
+import { onMounted, onUnmounted, ref, watch } from "vue";
+import * as json1 from "ot-json1";
+import { View, parse, type Spec } from "vega";
+import type { Socket } from "sharedb/lib/sharedb";
+import ScalesEditor from "./ScalesEditor.vue";
+// import MarkSelector from "../components/MarkSelector.vue";
+
+const viz = ref(null as unknown as HTMLElement);
+
+const vegaSpec = ref<Spec>({});
+const canRenderSpec = ref(true);
+const scales = ref([]);
+
+let view: View;
+watch(vegaSpec, () => {
+  try {
+    console.log("render", vegaSpec.value);
+    if (view) {
+      view.finalize();
+    }
+    view = new View(parse(vegaSpec.value), {
+      renderer: "svg",
+      container: viz.value,
+      hover: true,
+    });
+    view.run();
+    canRenderSpec.value = true;
+  } catch (e) {
+    console.error("caught", e);
+    canRenderSpec.value = false;
+  }
+});
+
+const updateSpec = () => {
+  console.log("update", doc.version);
+  scales.value = doc.data.spec.scales;
+
+  vegaSpec.value = doc.data.spec;
+};
+
+// Open WebSocket connection to ShareDB server
+const socket = new ReconnectingWebSocket(
+  "ws://" + window.location.hostname + ":8080"
+);
+Client.types.register(json1.type);
+const connection = new Client.Connection(socket as Socket);
+
+// Create local Doc instance mapped to 'examples' collection document with id 'counter'
+const doc: Client.Doc = connection.get("examples", "counter");
+
+onMounted(() => {
+  console.log("subbing");
+  // Get initial value of document and subscribe to changes
+  doc.subscribe(() => {
+    console.log("subscribed");
+    updateSpec();
+  });
+});
+onUnmounted(() => {
+  console.log("unsubbing");
+  doc.unsubscribe();
+});
+
+// When document changes (by this client or any other, or the server),
+// update the number on the page
+doc.on("op", (a, b, c) => {
+  console.log("on op", a, b, c);
+  updateSpec();
+});
+
+const submitOp = (data: unknown) => {
+  console.log("submiting op", data);
+  doc.submitOp(data);
+};
+
+const changed = (op: any) => {
+  console.log("Viz editor!", op);
+  submitOp(["spec"].concat([op]));
+};
+</script>
 
 <template>
-  <div>hi</div>
+  <main>
+    <p>
+      Status:
+      <span
+        :class="{
+          circle: true,
+          ['viz-status-' + (canRenderSpec ? 'ok' : 'error')]: true,
+        }"
+      ></span>
+    </p>
+    <!-- <MarkSelector :initialMark="initialMark" @op="submitOp" /> -->
+    <br />
+    <div ref="viz"></div>
+    <div class="pane-holder">
+      <ScalesEditor :scales="scales" @op="changed" />
+    </div>
+  </main>
 </template>
+
+<style>
+.pane-holder {
+  width: 300px;
+  border: 1px solid black;
+}
+.circle {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  top: 2px;
+}
+.viz-status-ok {
+  background-color: green;
+}
+.viz-status-error {
+  background-color: red;
+}
+</style>
