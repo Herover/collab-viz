@@ -8,6 +8,7 @@ const emit = defineEmits<{
 const props = defineProps<{
   value: string;
   options: string[];
+  label: string;
 }>();
 
 const value = ref(props.value);
@@ -21,11 +22,15 @@ watch(
 const changed = () => {
   emit("op", [{ r: 0, i: value.value }]);
 };
+
+// TODO: Find better way to get unique identifier
+const id = Math.random() + "";
 </script>
 
 <template>
   <div>
-    <select v-model="value" @change="changed">
+    <label :for="id">{{ props.label }}</label>
+    <select :id="id" v-model="value" @change="changed">
       <option v-for="o in options" :key="o" :value="o">{{ o }}</option>
     </select>
   </div>

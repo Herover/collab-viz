@@ -7,6 +7,7 @@ const emit = defineEmits<{
 
 const props = defineProps<{
   value: boolean;
+  label: string;
 }>();
 
 const value = ref(props.value);
@@ -20,10 +21,14 @@ watch(
 const changed = () => {
   emit("op", [{ r: 0, i: value.value }]);
 };
+
+// TODO: Find better way to get unique identifier
+const id = Math.random() + "";
 </script>
 
 <template>
   <div>
-    <input type="checkbox" v-model="value" @change="changed" />
+    <label :for="id">{{ props.label }}</label>
+    <input :id="id" type="checkbox" v-model="value" @change="changed" />
   </div>
 </template>

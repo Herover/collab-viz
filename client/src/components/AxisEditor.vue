@@ -24,8 +24,13 @@ const orientations = ["left", "right", "top", "bottom"];
     <DropdownInput
       :value="props.axis.orient"
       :options="orientations"
+      label="Orientation"
       @op="(op) => changed('orient', op)"
     />
-    <CheckboxInput :value="props.axis.grid" @op="(op) => changed('grid', op)" />
+    <CheckboxInput
+      label="Gridlines"
+      :value="props.axis.grid"
+      @op="(op) => changed('grid', op)"
+    />
   </div>
 </template>
