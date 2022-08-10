@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
 import DropdownInput from "./DropdownInput.vue";
+import CheckboxInput from "./CheckboxInput.vue";
 
 const emit = defineEmits<{
   (event: "op", data: unknown): void;
@@ -19,11 +20,12 @@ const orientations = ["left", "right", "top", "bottom"];
 </script>
 
 <template>
-  <div>
+  <div class="pane-holder">
     <DropdownInput
       :value="props.axis.orient"
       :options="orientations"
       @op="(op) => changed('orient', op)"
     />
+    <CheckboxInput :value="props.axis.grid" @op="(op) => changed('grid', op)" />
   </div>
 </template>

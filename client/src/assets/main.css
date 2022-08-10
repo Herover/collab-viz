@@ -7,3 +7,8 @@
 
   font-weight: normal;
 }
+
+.pane-holder {
+  width: 300px;
+  border: 1px solid black;
+}

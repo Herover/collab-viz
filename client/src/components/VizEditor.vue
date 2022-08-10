@@ -134,10 +134,6 @@ const changed = (op: any) => {
 </template>
 
 <style>
-.pane-holder {
-  width: 300px;
-  border: 1px solid black;
-}
 .circle {
   display: inline-block;
   width: 14px;
