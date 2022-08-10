@@ -6,6 +6,7 @@ import * as json1 from "ot-json1";
 import { View, parse, type Spec } from "vega";
 import type { Socket } from "sharedb/lib/sharedb";
 import ScalesEditor from "./ScalesEditor.vue";
+import AxesEditor from "./AxesEditor.vue";
 // import MarkSelector from "../components/MarkSelector.vue";
 
 const STATUS_OK = 0;
@@ -18,6 +19,7 @@ const vegaSpec = ref<Spec>({});
 const canRenderSpec = ref(true);
 const connected = ref(false);
 const scales = ref([]);
+const axes = ref([]);
 
 const statusIndicator = computed(() => {
   if (!canRenderSpec.value) return STATUS_ERROR;
@@ -48,6 +50,7 @@ watch(vegaSpec, () => {
 const updateSpec = () => {
   console.log("update", doc.version);
   scales.value = doc.data.spec.scales;
+  axes.value = doc.data.spec.axes;
 
   vegaSpec.value = doc.data.spec;
 };
@@ -67,6 +70,8 @@ socket.addEventListener("error", (e) => {
   connected.value = false;
   console.log("error", e, socket.CONNECTING, socket.CLOSED);
 });
+// TODO
+// socket.removeEventListener("open");
 
 Client.types.register(json1.type);
 const connection = new Client.Connection(socket as Socket);
@@ -123,6 +128,7 @@ const changed = (op: any) => {
     <div ref="viz"></div>
     <div class="pane-holder">
       <ScalesEditor :scales="scales" @op="changed" />
+      <AxesEditor :axes="axes" @op="changed" />
     </div>
   </main>
 </template>
