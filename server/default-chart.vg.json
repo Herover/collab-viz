@@ -43,6 +43,7 @@
     },
     {
       "name": "yscale",
+      "type": "linear",
       "domain": {"data": "table", "field": "amount"},
       "nice": true,
       "range": "height"
