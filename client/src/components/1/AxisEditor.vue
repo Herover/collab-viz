@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
-import DropdownInput from "./DropdownInput.vue";
-import CheckboxInput from "./CheckboxInput.vue";
+import DropdownInput from "../DropdownInput.vue";
+import CheckboxInput from "../CheckboxInput.vue";
 
 const emit = defineEmits<{
   (event: "op", data: unknown): void;

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import VizEditor from "@/components/VizEditor.vue";
+import VizEditor from "@/components/1/VizEditor.vue";
 </script>
 
 <template>

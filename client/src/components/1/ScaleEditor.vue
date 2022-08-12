@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
-import DropdownInput from "./DropdownInput.vue";
+import DropdownInput from "../DropdownInput.vue";
 
 const emit = defineEmits<{
   (event: "op", data: unknown): void;
