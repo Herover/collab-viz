@@ -9,7 +9,7 @@ var standardChart = JSON.stringify(require('./default-chart.vg.json'))
 
 ShareDB.types.register(json1.type);
 var backend = new ShareDB();
-createDoc(startServer);
+createDoc(createDoc2(startServer));
 
 // Create initial document then fire callback
 function createDoc(callback) {
@@ -30,6 +30,71 @@ function createDoc(callback) {
     callback();
   });
 }
+function createDoc2(callback) {
+  var connection = backend.connect();
+  var doc = connection.get('fancy', '1');
+  doc.fetch(function(err) {
+    if (err) throw err;
+    if (doc.type === null) {
+      doc.create(
+        {
+          type: "fancy",
+          spec: {
+            width: 400,
+            height: 400,
+            data: [{
+              _id: "d1",
+              name: "Some test values",
+              url: "http://localhost:8080/test1.csv",
+            }, {
+              _id: "d2",
+              name: "hotel-5",
+              url: "http://localhost:8080/hotel-5.csv",
+            }],
+            transforms: [],
+            charts: [{
+              _id: "c1",
+              name: "Pie chart",
+              type: "pie",
+              data: "d1",
+              categories: "c",
+              values: "a",
+              width: 200,
+              height: 200,
+              x: 0,
+              y: 0,
+            }, {
+              _id: "c2",
+              name: "Bar chart",
+              type: "bar",
+              data: "d1",
+              categories: "c",
+              value: "b",
+              width: 200,
+              height: 200,
+              x: 100,
+              y: 100,
+            }, {
+              _id: "c3",
+              name: "Line chart",
+              type: "line",
+              data: "d1",
+              fieldx: "a",
+              fieldy: "b",
+              width: 200,
+              height: 200,
+              x: 200,
+              y: 0,
+            }],
+          },
+        },
+        json1.type.uri, callback,
+      );
+      return;
+    }
+    callback();
+  });
+}
 
 function startServer() {
   // Create a web server to serve files and listen to WebSocket connections
@@ -42,7 +107,7 @@ function startServer() {
     next();
   });
 
-  app.use(express.static('static'));
+  app.use(express.static('public'));
   var server = http.createServer(app);
 
   // Connect any incoming WebSocket connection to ShareDB
