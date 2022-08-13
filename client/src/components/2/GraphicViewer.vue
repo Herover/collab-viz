@@ -18,7 +18,7 @@ const dataSources = ref([]);
 
 let view: View;
 
-const renderViz = () => {
+const renderViz = async () => {
   const vegaSpec: Spec = {
     $schema: "https://vega.github.io/schema/vega/v5.json",
     width: props.spec.width,
@@ -261,34 +261,31 @@ const renderViz = () => {
       container: viz.value,
       hover: true,
     });
-    view.run();
+    await view.runAsync();
 
-    setTimeout(() => {
-      props.spec.data.map((d: any) => {
-        console.log(d._id, view.data(d._id));
-      });
-      console.log(
-        view.getState({
-          data: truthy,
-        })
-      );
-      const dataSets = view.getState({
+    props.spec.data.map((d: any) => {
+      console.log(d._id, view.data(d._id));
+    });
+    console.log(
+      view.getState({
         data: truthy,
-      }).data;
-      emit(
-        "datasetsChanged",
-        Object.keys(dataSets).map(
-          (k) => ({
-            name: k,
-            display: (props.spec.data.find((d) => d._id == k) || { name: k })
-              .name,
-            keys: Object.keys(dataSets[k][0]),
-          }),
-          {} as { name: string; keys: string[] }[]
-        )
-      );
-    }, 1000);
-    window.view = view;
+      })
+    );
+    const dataSets = view.getState({
+      data: truthy,
+    }).data;
+    emit(
+      "datasetsChanged",
+      Object.keys(dataSets).map(
+        (k) => ({
+          name: k,
+          display: (props.spec.data.find((d: any) => d._id == k) || { name: k })
+            .name,
+          keys: Object.keys(dataSets[k][0]),
+        }),
+        {} as { name: string; keys: string[] }[]
+      )
+    );
 
     canRenderSpec.value = true;
   } catch (e) {
