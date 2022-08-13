@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 
 const emit = defineEmits<{
   (event: "op", data: unknown): void;
@@ -7,7 +7,7 @@ const emit = defineEmits<{
 
 const props = defineProps<{
   value: string;
-  options: string[];
+  options: string[] | { value: string; name: string }[];
   label: string;
 }>();
 
@@ -18,6 +18,24 @@ watch(
     value.value = props.value;
   }
 );
+
+const coptions = computed(() => {
+  if (props.options.length == 0) {
+    return [];
+  }
+
+  if (typeof props.options[0] == "string") {
+    return props.options.map((d) => ({
+      val: d,
+      name: d,
+    }));
+  }
+
+  return props.options.map((d: any) => ({
+    val: d.value,
+    name: d.name,
+  }));
+});
 
 const changed = () => {
   emit("op", [{ r: 0, i: value.value }]);
@@ -31,7 +49,9 @@ const id = Math.random() + "";
   <div>
     <label :for="id">{{ props.label }}</label>
     <select :id="id" v-model="value" @change="changed">
-      <option v-for="o in options" :key="o" :value="o">{{ o }}</option>
+      <option v-for="o in coptions" :key="o.val" :value="o.val">
+        {{ o.name }}
+      </option>
     </select>
   </div>
 </template>
