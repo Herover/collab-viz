@@ -19,6 +19,8 @@ const validCategories = computed(() => {
   return datasets.value.find((d) => d.name == dataset.value)?.keys;
 });
 
+const validAlignments = ["left", "right", "center"];
+
 const xPos = ref(props.chart.x);
 watch(
   () => props.chart.x,
@@ -68,6 +70,20 @@ watch(
     values.value = props.chart.values;
   }
 );
+const labelAngle = ref(props.chart.labelAngle);
+watch(
+  () => props.chart.labelAngle,
+  () => {
+    labelAngle.value = props.chart.labelAngle;
+  }
+);
+const labelAlign = ref(props.chart.labelAlign);
+watch(
+  () => props.chart.labelAlign,
+  () => {
+    labelAlign.value = props.chart.labelAlign;
+  }
+);
 
 const changed = (k: string, op: any) => {
   emit("op", [k, op]);
@@ -112,5 +128,16 @@ const changed = (k: string, op: any) => {
     :options="validCategories || []"
     label="Values from"
     @op="(op) => changed('values', op)"
+  />
+  <NumberInput
+    :value="labelAngle"
+    label="Label angle"
+    @op="(op) => changed('labelAngle', op)"
+  />
+  <DropdownInput
+    :value="labelAlign"
+    :options="validAlignments || []"
+    label="Text alignment"
+    @op="(op) => changed('labelAlign', op)"
   />
 </template>

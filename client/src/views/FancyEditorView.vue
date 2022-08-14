@@ -87,11 +87,25 @@ const datasetsChanged = (newDatasets: any) => {
 
 <template>
   <main>
-    <InfographicEditor v-if="spec" :spec="spec" @op="changed" />
-    <GraphicViewer
-      v-if="spec"
-      :spec="spec"
-      @datasets-changed="datasetsChanged"
-    />
+    <div class="editors">
+      <InfographicEditor v-if="spec" :spec="spec" @op="changed" />
+    </div>
+    <div class="graphic">
+      <GraphicViewer
+        v-if="spec"
+        :spec="spec"
+        @datasets-changed="datasetsChanged"
+      />
+    </div>
   </main>
 </template>
+<style scoped="true">
+.editors,
+.graphic {
+  float: left;
+}
+.graphic div {
+  position: fixed;
+  top: 10px;
+}
+</style>

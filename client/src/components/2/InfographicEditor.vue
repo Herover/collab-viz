@@ -2,6 +2,8 @@
 import { ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import PieChartEditor from "./PieChartEditor.vue";
+import BarChartEditor from "./BarChartEditor.vue";
+import LineChartEditor from "./LineChartEditor.vue";
 
 const props = defineProps<{
   spec: any;
@@ -23,6 +25,66 @@ watch(
 const changed = (path: (number | string)[], op: any) => {
   emit("op", path.concat(op));
 };
+
+const getCommonChartData = () => ({
+  // TODO: use UUID
+  _id: (Math.random() + "").split(".")[1],
+  name: "",
+  type: "",
+  data: "",
+  width: 200,
+  height: 200,
+  x: props.spec.width / 2 - 100,
+  y: props.spec.height / 2 - 100,
+});
+
+const addBar = () => {
+  emit("op", [
+    "charts",
+    props.spec.charts.length,
+    {
+      i: {
+        ...getCommonChartData(),
+        name: "Bar chart",
+        type: "bar",
+        categories: "",
+        values: "",
+        labelAngle: 0,
+        labelAlign: "center",
+      },
+    },
+  ]);
+};
+const addLine = () => {
+  emit("op", [
+    "charts",
+    props.spec.charts.length,
+    {
+      i: {
+        ...getCommonChartData(),
+        name: "Line chart",
+        type: "line",
+        xField: "",
+        yField: "",
+      },
+    },
+  ]);
+};
+const addPie = () => {
+  emit("op", [
+    "charts",
+    props.spec.charts.length,
+    {
+      i: {
+        ...getCommonChartData(),
+        name: "Pie chart",
+        type: "pie",
+        categories: "",
+        values: "",
+      },
+    },
+  ]);
+};
 </script>
 <template>
   <div v-if="spec">
@@ -35,9 +97,22 @@ const changed = (path: (number | string)[], op: any) => {
       <PieChartEditor
         v-if="c.type == 'pie'"
         :chart="c"
-        @op="(op) => changed(['charts', index], op)"
+        @op="(op: any) => changed(['charts', index], op)"
+      />
+      <BarChartEditor
+        v-else-if="c.type == 'bar'"
+        :chart="c"
+        @op="(op: any) => changed(['charts', index], op)"
+      />
+      <LineChartEditor
+        v-else-if="c.type == 'line'"
+        :chart="c"
+        @op="(op: any) => changed(['charts', index], op)"
       />
     </div>
+    <button @click="addPie">+Pie</button>
+    <button @click="addBar">+Bar</button>
+    <button @click="addLine">+Line</button>
   </div>
 </template>
 

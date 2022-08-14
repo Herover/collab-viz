@@ -142,7 +142,7 @@ const renderViz = async () => {
                 },
                 {
                   name: "yscale",
-                  domain: { data: d.data, field: d.value },
+                  domain: { data: d.data, field: d.values },
                   nice: true,
                   range: "height",
                 },
@@ -152,6 +152,8 @@ const renderViz = async () => {
                 {
                   orient: "bottom",
                   scale: "xscale",
+                  labelAngle: d.labelAngle,
+                  labelAlign: d.labelAlign,
                 },
                 {
                   orient: "left",
@@ -167,7 +169,7 @@ const renderViz = async () => {
                     enter: {
                       x: { scale: "xscale", field: d.categories },
                       width: { scale: "xscale", band: 1 },
-                      y: { scale: "yscale", field: d.value },
+                      y: { scale: "yscale", field: d.values },
                       y2: { scale: "yscale", value: 0 },
                     },
                   },
@@ -201,14 +203,14 @@ const renderViz = async () => {
                 {
                   name: "xscale",
                   type: "linear",
-                  domain: { data: d.data, field: d.fieldx },
+                  domain: { data: d.data, field: d.xField },
                   round: true,
                   range: "width",
                 },
                 {
                   name: "yscale",
                   type: "linear",
-                  domain: { data: d.data, field: d.fieldy },
+                  domain: { data: d.data, field: d.yField },
                   nice: true,
                   range: "height",
                 },
@@ -231,8 +233,8 @@ const renderViz = async () => {
                   from: { data: d.data },
                   encode: {
                     enter: {
-                      x: { scale: "xscale", field: d.fieldx },
-                      y: { scale: "yscale", field: d.fieldy },
+                      x: { scale: "xscale", field: d.xField },
+                      y: { scale: "yscale", field: d.yField },
                       strokeWidth: { value: 2 },
                     },
                   },
@@ -308,6 +310,5 @@ onMounted(() => {
 });
 </script>
 <template>
-  vis!
   <div ref="viz"></div>
 </template>

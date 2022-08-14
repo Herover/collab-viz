@@ -54,18 +54,18 @@ watch(
     dataset.value = props.chart.data;
   }
 );
-const categories = ref(props.chart.categories);
+const xField = ref(props.chart.xField);
 watch(
-  () => props.chart.categories,
+  () => props.chart.xField,
   () => {
-    categories.value = props.chart.categories;
+    xField.value = props.chart.xField;
   }
 );
-const values = ref(props.chart.values);
+const yField = ref(props.chart.yField);
 watch(
-  () => props.chart.values,
+  () => props.chart.yField,
   () => {
-    values.value = props.chart.values;
+    yField.value = props.chart.yField;
   }
 );
 
@@ -102,15 +102,15 @@ const changed = (k: string, op: any) => {
     @op="(op) => changed('data', op)"
   />
   <DropdownInput
-    :value="categories"
+    :value="xField"
     :options="validCategories || []"
-    label="Categories from"
-    @op="(op) => changed('categories', op)"
+    label="X values from"
+    @op="(op) => changed('xField', op)"
   />
   <DropdownInput
-    :value="values"
+    :value="yField"
     :options="validCategories || []"
-    label="Values from"
-    @op="(op) => changed('values', op)"
+    label="Y values from"
+    @op="(op) => changed('yField', op)"
   />
 </template>
