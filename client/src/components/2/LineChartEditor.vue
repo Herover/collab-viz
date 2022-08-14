@@ -68,6 +68,13 @@ watch(
     yField.value = props.chart.yField;
   }
 );
+const series = ref(props.chart.series);
+watch(
+  () => props.chart.series,
+  () => {
+    series.value = props.chart.series;
+  }
+);
 
 const changed = (k: string, op: any) => {
   emit("op", [k, op]);
@@ -112,5 +119,11 @@ const changed = (k: string, op: any) => {
     :options="validCategories || []"
     label="Y values from"
     @op="(op) => changed('yField', op)"
+  />
+  <DropdownInput
+    :value="series"
+    :options="[''].concat(validCategories || [])"
+    label="Series/categories"
+    @op="(op) => changed('series', op)"
   />
 </template>

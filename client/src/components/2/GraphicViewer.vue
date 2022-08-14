@@ -224,7 +224,7 @@ const renderViz = async () => {
               scales: [
                 {
                   name: "xscale",
-                  type: "linear",
+                  type: "time",
                   domain: { data: d.data, field: d.xField },
                   round: true,
                   range: "width",
@@ -235,6 +235,12 @@ const renderViz = async () => {
                   domain: { data: d.data, field: d.yField },
                   nice: true,
                   range: "height",
+                },
+                {
+                  name: "color",
+                  type: "ordinal",
+                  domain: { data: d.data, field: d.series },
+                  range: { scheme: "category20" },
                 },
               ],
 
@@ -251,15 +257,34 @@ const renderViz = async () => {
 
               marks: [
                 {
-                  type: "line",
-                  from: { data: d.data },
-                  encode: {
-                    enter: {
-                      x: { scale: "xscale", field: d.xField },
-                      y: { scale: "yscale", field: d.yField },
-                      strokeWidth: { value: 2 },
+                  type: "group",
+                  ...(d.series
+                    ? {
+                        from: {
+                          facet: {
+                            name: "series",
+                            data: d.data,
+                            groupby: d.series,
+                          },
+                        },
+                      }
+                    : {}),
+                  marks: [
+                    {
+                      type: "line",
+                      from: { data: d.series ? "series" : d.data },
+                      encode: {
+                        enter: {
+                          x: { scale: "xscale", field: d.xField },
+                          y: { scale: "yscale", field: d.yField },
+                          strokeWidth: { value: 2 },
+                          ...(d.series
+                            ? { stroke: { scale: "color", field: d.series } }
+                            : {}),
+                        },
+                      },
                     },
-                  },
+                  ],
                 },
               ],
             };
