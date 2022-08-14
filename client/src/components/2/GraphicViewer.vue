@@ -30,10 +30,32 @@ const renderViz = async () => {
         name: d._id,
         url: d.url,
         format: { type: "csv" },
+        transform: [
+          ...d.transforms.map((d: any) => {
+            if (d.type == "toDate") {
+              return {
+                type: "formula",
+                as: d.key,
+                expr: `datetime(datum['${d.field}'])`,
+              };
+            }
+          }),
+        ],
       })),
       {
         name: "TEST",
-        values: [1, 2, 3],
+        values: [
+          { v1: 42, v2: 0, c: "a" },
+          { v1: 24, v2: 1, c: "a" },
+          { v1: 12, v2: 2, c: "a" },
+          { v1: 43, v2: 3, c: "a" },
+          { v1: 65, v2: 4, c: "a" },
+          { v1: 11, v2: 0, c: "b" },
+          { v1: 53, v2: 1, c: "b" },
+          { v1: 21, v2: 2, c: "b" },
+          { v1: 33, v2: 3, c: "b" },
+          { v1: 15, v2: 4, c: "b" },
+        ],
       },
     ],
 
@@ -278,15 +300,29 @@ const renderViz = async () => {
     }).data;
     emit(
       "datasetsChanged",
-      Object.keys(dataSets).map(
-        (k) => ({
+      Object.keys(dataSets).map((k) => {
+        const display = (
+          props.spec.data.find((d: any) => d._id == k) || { name: k }
+        ).name;
+        if (Array.isArray(dataSets[k])) {
+          return {
+            name: k,
+            display: display,
+            keys: Object.keys(dataSets[k][0]),
+          };
+        }
+
+        // Data is a object, sometimes happens with transforms
+        const subKeys = Object.keys(dataSets[k]);
+        if (subKeys.length == 0) {
+          return { name: k, display: display, keys: [] };
+        }
+        return {
           name: k,
-          display: (props.spec.data.find((d: any) => d._id == k) || { name: k })
-            .name,
-          keys: Object.keys(dataSets[k][0]),
-        }),
-        {} as { name: string; keys: string[] }[]
-      )
+          display: display,
+          keys: Object.keys(dataSets[k][subKeys[0]]),
+        };
+      }, {} as { name: string; keys: string[] }[])
     );
 
     canRenderSpec.value = true;

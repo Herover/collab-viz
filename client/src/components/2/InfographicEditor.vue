@@ -4,6 +4,7 @@ import { useRouter } from "vue-router";
 import PieChartEditor from "./PieChartEditor.vue";
 import BarChartEditor from "./BarChartEditor.vue";
 import LineChartEditor from "./LineChartEditor.vue";
+import DataEditor from "./DataEditor.vue";
 
 const props = defineProps<{
   spec: any;
@@ -89,8 +90,11 @@ const addPie = () => {
 <template>
   <div v-if="spec">
     <span>Data</span>
-    <div v-for="d in spec.data" :key="d._id" class="editor-panel">
-      <span class="panel-title">{{ d.name }}</span>
+    <div v-for="(d, index) in spec.data" :key="d._id" class="editor-panel">
+      <DataEditor
+        :dataset="d"
+        @op="(op: any) => changed(['data', index], op)"
+      />
     </div>
     <span>Charts</span>
     <div v-for="(c, index) in spec.charts" :key="c._id" class="editor-panel">

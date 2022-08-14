@@ -46,10 +46,16 @@ function createDoc2(callback) {
               _id: "d1",
               name: "Some test values",
               url: "http://localhost:8080/test1.csv",
+              transforms: [],
             }, {
               _id: "d2",
               name: "hotel-5",
               url: "http://localhost:8080/hotel-5.csv",
+              transforms: [{
+                type: "toDate",
+                field: "date",
+                key: "date",
+              }],
             }],
             transforms: [],
             charts: [{
