@@ -86,6 +86,41 @@ const addPie = () => {
     },
   ]);
 };
+
+const moveUp = (index: number) => {
+  emit("op", [
+    "charts",
+    [
+      index,
+      {
+        p: 0,
+      },
+    ],
+    [
+      index - 1,
+      {
+        d: 0,
+      },
+    ],
+  ]);
+};
+const moveDown = (index: number) => {
+  emit("op", [
+    "charts",
+    [
+      index,
+      {
+        p: 0,
+      },
+    ],
+    [
+      index + 1,
+      {
+        d: 0,
+      },
+    ],
+  ]);
+};
 </script>
 <template>
   <div v-if="spec">
@@ -113,6 +148,14 @@ const addPie = () => {
         :chart="c"
         @op="(op: any) => changed(['charts', index], op)"
       />
+      <button @click="() => moveUp(index)" :disabled="index == 0">Up</button>
+      <button
+        @click="() => moveDown(index)"
+        :disabled="index + 1 == spec.charts.length"
+      >
+        Down
+      </button>
+      <button>Delete</button>
     </div>
     <button @click="addPie">+Pie</button>
     <button @click="addBar">+Bar</button>
